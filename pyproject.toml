@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aws-cost-optimizer"
+version = "0.1.0"
+description = "AWS cost optimization recommendations and automation"
+authors = [{name = "Jonathan Schimpf", email = "jon@theatrico.org"}]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["aws", "cost", "optimization", "finops", "devops", "cloud"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Systems Administration",
+  "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+  "boto3>=1.26.0",
+  "rich>=13.0.0",
+  "click>=8.0.0"
+]
+
+[project.scripts]
+aws-cost-optimizer = "aws_cost_optimizer.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/mjfxjas/aws-cost-optimizer"
+Repository = "https://github.com/mjfxjas/aws-cost-optimizer.git"
+Issues = "https://github.com/mjfxjas/aws-cost-optimizer/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
