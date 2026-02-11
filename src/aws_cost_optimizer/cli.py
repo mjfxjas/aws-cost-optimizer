@@ -30,7 +30,7 @@ def analyze(service):
         recommendations.extend(analyzers.analyze_cloudfront())
     
     if not recommendations:
-        console.print("[green]✓ No cost optimization opportunities found![/green]")
+        console.print("[green]No cost optimization opportunities found![/green]")
         return
     
     table = Table(title="Cost Optimization Recommendations")
@@ -63,7 +63,7 @@ def apply(service, resource, dry_run):
     else:
         console.print(f"[green]Optimizing {service}/{resource}...[/green]")
         # Implementation would go here
-        console.print("[green]✓ Optimization applied![/green]")
+        console.print("[green]Optimization applied![/green]")
 
 @main.command()
 def report():
