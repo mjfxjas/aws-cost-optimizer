@@ -33,14 +33,9 @@ aws-cost-optimizer apply dynamodb my-table
 ## Example Output
 
 ```
-Cost Optimization Recommendations
-┏━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Service   ┃ Resource    ┃ Issue                  ┃ Savings  ┃ Action                    ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ DynamoDB  │ my-table    │ Using on-demand        │ ~40-60%  │ Switch to provisioned     │
-│ Lambda    │ my-function │ No concurrency limit   │ Prevent  │ Set reserved concurrency  │
-│ S3        │ my-bucket   │ No lifecycle policy    │ ~20-30%  │ Add lifecycle rules       │
-└───────────┴─────────────┴────────────────────────┴──────────┴───────────────────────────┘
+Service: DynamoDB | Resource: my-table | Issue: Using on-demand | Savings: ~40-60% | Action: Switch to provisioned
+Service: Lambda | Resource: my-function | Issue: No concurrency limit | Savings: Prevent overruns | Action: Set reserved concurrency
+Service: S3 | Resource: my-bucket | Issue: No lifecycle policy | Savings: ~20-30% | Action: Add lifecycle rules
 ```
 
 ## Real-World Results
