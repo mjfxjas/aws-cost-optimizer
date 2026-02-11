@@ -1,5 +1,8 @@
 # AWS Cost Optimizer
 
+[![CI](https://github.com/mjfxjas/aws-cost-optimizer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mjfxjas/aws-cost-optimizer/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/aws-cost-optimizer.svg)](https://pypi.org/project/aws-cost-optimizer/)
+
 Automated AWS cost optimization recommendations based on production experience achieving 60% cost reduction.
 
 ## Features
@@ -28,6 +31,15 @@ aws-cost-optimizer analyze --service dynamodb
 # Apply optimization (dry-run first)
 aws-cost-optimizer apply dynamodb my-table --dry-run
 aws-cost-optimizer apply dynamodb my-table
+```
+
+## Smoke Test
+Quick verification that install and CLI wiring are healthy:
+
+```bash
+python3 -m pip install --upgrade aws-cost-optimizer
+aws-cost-optimizer --help
+python3 -c "from importlib.metadata import version; print(version('aws-cost-optimizer'))"
 ```
 
 ## Example Output
@@ -61,7 +73,11 @@ pip install -e .
 
 ## License
 
-MIT License - Jonathan Schimpf
+MIT. See `LICENSE`.
+
+## Changelog
+
+See `CHANGELOG.md` for versioned release notes.
 
 ## Author
 
