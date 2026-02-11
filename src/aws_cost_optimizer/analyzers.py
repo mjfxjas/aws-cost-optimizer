@@ -1,6 +1,11 @@
 """Cost optimization analyzers for AWS services"""
+import logging
+
 import boto3
 from typing import List, Dict
+
+
+logger = logging.getLogger(__name__)
 
 def analyze_dynamodb() -> List[Dict]:
     """Analyze DynamoDB tables for cost optimization"""
@@ -22,8 +27,8 @@ def analyze_dynamodb() -> List[Dict]:
                     'savings': '~40-60%',
                     'action': 'Switch to provisioned capacity'
                 })
-    except Exception as e:
-        pass
+    except Exception as err:
+        logger.warning("DynamoDB analyzer failed: %s", err)
     
     return recommendations
 
@@ -44,8 +49,8 @@ def analyze_lambda() -> List[Dict]:
                     'savings': 'Prevent runaway costs',
                     'action': 'Set reserved concurrency'
                 })
-    except Exception as e:
-        pass
+    except Exception as err:
+        logger.warning("Lambda analyzer failed: %s", err)
     
     return recommendations
 
@@ -70,8 +75,8 @@ def analyze_s3() -> List[Dict]:
                     'savings': '~20-30%',
                     'action': 'Add lifecycle rules for old objects'
                 })
-    except Exception as e:
-        pass
+    except Exception as err:
+        logger.warning("S3 analyzer failed: %s", err)
     
     return recommendations
 
@@ -93,7 +98,7 @@ def analyze_cloudfront() -> List[Dict]:
                     'savings': '~50-90% origin requests',
                     'action': 'Increase cache TTL to 3600s+'
                 })
-    except Exception as e:
-        pass
+    except Exception as err:
+        logger.warning("CloudFront analyzer failed: %s", err)
     
     return recommendations
