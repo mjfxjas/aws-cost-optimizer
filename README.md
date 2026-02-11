@@ -42,6 +42,14 @@ aws-cost-optimizer --help
 python3 -c "from importlib.metadata import version; print(version('aws-cost-optimizer'))"
 ```
 
+## Security Checks
+- CI runs Bandit static security analysis on `src/aws_cost_optimizer` (Python 3.11 job).
+- Failing threshold is set to medium-or-higher severity/confidence.
+
+```bash
+bandit -r src/aws_cost_optimizer --severity-level medium --confidence-level medium
+```
+
 ## Example Output
 
 ```
