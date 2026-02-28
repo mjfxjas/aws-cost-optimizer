@@ -1,8 +1,9 @@
 """Cost optimization analyzers for AWS services"""
 import logging
+from typing import List, Dict
 
 import boto3
-from typing import List, Dict
+from botocore.exceptions import ClientError
 
 
 logger = logging.getLogger(__name__)
@@ -67,14 +68,20 @@ def analyze_s3() -> List[Dict]:
             # Check for lifecycle policies
             try:
                 s3.get_bucket_lifecycle_configuration(Bucket=bucket_name)
-            except s3.exceptions.NoSuchLifecycleConfiguration:
-                recommendations.append({
-                    'service': 'S3',
-                    'resource': bucket_name,
-                    'issue': 'No lifecycle policy',
-                    'savings': '~20-30%',
-                    'action': 'Add lifecycle rules for old objects'
-                })
+            except ClientError as err:
+                code = err.response.get('Error', {}).get('Code', '')
+                if code == 'NoSuchLifecycleConfiguration':
+                    recommendations.append({
+                        'service': 'S3',
+                        'resource': bucket_name,
+                        'issue': 'No lifecycle policy',
+                        'savings': '~20-30%',
+                        'action': 'Add lifecycle rules for old objects'
+                    })
+                elif code in {'AccessDenied', 'AllAccessDisabled'}:
+                    logger.info("Skipping S3 bucket %s lifecycle check due to access restrictions", bucket_name)
+                else:
+                    logger.warning("S3 lifecycle check failed for %s: %s", bucket_name, err)
     except Exception as err:
         logger.warning("S3 analyzer failed: %s", err)
     
