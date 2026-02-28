@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aws-cost-optimizer"
-version = "0.1.2"
+version = "0.1.3"
 description = "AWS cost optimization recommendations and automation"
 authors = [{name = "Jonathan Schimpf", email = "jon@theatrico.org"}]
 readme = "README.md"

@@ -28,10 +28,18 @@ aws-cost-optimizer analyze
 # Analyze specific service
 aws-cost-optimizer analyze --service dynamodb
 
-# Apply optimization (dry-run first)
-aws-cost-optimizer apply dynamodb my-table --dry-run
-aws-cost-optimizer apply dynamodb my-table
+# Bulk apply workflow (safe-first)
+aws-cost-optimizer apply --all --service all --dry-run
+aws-cost-optimizer apply --all --service dynamodb --dry-run
+
+# Single-resource workflow
+aws-cost-optimizer apply --service dynamodb my-table --dry-run
+
+# Interactive menu/hub
+aws-cost-optimizer menu
 ```
+
+> Note: `apply` currently runs a planned-step execution path (safe scaffolding) and does not yet issue mutating AWS API calls.
 
 ## Smoke Test
 Quick verification that install and CLI wiring are healthy:
