@@ -42,6 +42,20 @@ aws-cost-optimizer apply --service dynamodb my-table --execute
 aws-cost-optimizer menu
 ```
 
+## Common Operator Flows
+A few high-signal commands to show what the tool is for:
+
+```bash
+# Full analysis pass across supported services
+aws-cost-optimizer analyze
+
+# Guided terminal experience
+aws-cost-optimizer menu
+
+# Safe bulk apply preview
+aws-cost-optimizer apply --all --service all --dry-run
+```
+
 ## Smoke Test
 Quick verification that install and CLI wiring are healthy:
 
