@@ -1,12 +1,12 @@
 """Cost optimization analyzers for AWS services"""
-import logging
 from typing import List, Dict
 
 import boto3
 from botocore.exceptions import ClientError
 
 
-logger = logging.getLogger(__name__)
+class AnalysisError(RuntimeError):
+    """An analyzer could not complete; its findings must not imply success."""
 
 def analyze_dynamodb() -> List[Dict]:
     """Analyze DynamoDB tables for cost optimization"""
@@ -29,7 +29,7 @@ def analyze_dynamodb() -> List[Dict]:
                     'action': 'Switch to provisioned capacity'
                 })
     except Exception as err:
-        logger.warning("DynamoDB analyzer failed: %s", err)
+        raise AnalysisError(f"DynamoDB analyzer failed: {err}") from err
     
     return recommendations
 
@@ -51,7 +51,7 @@ def analyze_lambda() -> List[Dict]:
                     'action': 'Set reserved concurrency'
                 })
     except Exception as err:
-        logger.warning("Lambda analyzer failed: %s", err)
+        raise AnalysisError(f"Lambda analyzer failed: {err}") from err
     
     return recommendations
 
@@ -78,12 +78,12 @@ def analyze_s3() -> List[Dict]:
                         'savings': '~20-30%',
                         'action': 'Add lifecycle rules for old objects'
                     })
-                elif code in {'AccessDenied', 'AllAccessDisabled'}:
-                    logger.info("Skipping S3 bucket %s lifecycle check due to access restrictions", bucket_name)
                 else:
-                    logger.warning("S3 lifecycle check failed for %s: %s", bucket_name, err)
+                    raise AnalysisError(
+                        f"S3 lifecycle check failed for {bucket_name}: {err}"
+                    ) from err
     except Exception as err:
-        logger.warning("S3 analyzer failed: %s", err)
+        raise AnalysisError(f"S3 analyzer failed: {err}") from err
     
     return recommendations
 
@@ -106,6 +106,6 @@ def analyze_cloudfront() -> List[Dict]:
                     'action': 'Increase cache TTL to 3600s+'
                 })
     except Exception as err:
-        logger.warning("CloudFront analyzer failed: %s", err)
+        raise AnalysisError(f"CloudFront analyzer failed: {err}") from err
     
     return recommendations

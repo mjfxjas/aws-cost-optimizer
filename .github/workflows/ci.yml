@@ -28,12 +28,22 @@ jobs:
           pip install build twine bandit
 
       - name: Install package
-        run: pip install -e .
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -e .
 
       - name: Verify installation
         run: |
-          aws-cost-optimizer --help
-          python -c "import aws_cost_optimizer; print(aws_cost_optimizer.__version__)"
+          .venv/bin/aws-cost-optimizer --help
+          .venv/bin/python -c "import aws_cost_optimizer; print(aws_cost_optimizer.__version__)"
+
+      - name: Regression tests
+        run: .venv/bin/python -m unittest discover -s tests -v
+
+      - name: Verify dependency installation
+        run: |
+          .venv/bin/python -m pip check
+          .venv/bin/python -c "import awscrt; from awscrt import crypto"
 
       - name: Bandit security scan
         if: matrix.python-version == '3.12'
