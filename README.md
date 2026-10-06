@@ -45,17 +45,16 @@ run `python -m pip install 'botocore[crt]'` inside its active virtual environmen
 
 ### Homebrew distribution
 
-PyPI publication does not create a Homebrew formula. A dedicated Homebrew tap
-can provide `brew install mjfxjas/tap/aws-cost-optimizer` once a
-`mjfxjas/homebrew-tap` repository and its formula have been published. This tap
-is not set up by this repository. Until then, use the pipx commands above.
-See [the Homebrew guide](docs/homebrew.md) for release, tap creation, dependency
-generation, testing, and publishing steps for this and your other programs.
+Install from the shared [Homebrew tap](https://github.com/mjfxjas/homebrew-tap):
 
-The formula should install a released source archive into its own virtual
-environment using `Language::Python::Virtualenv`, declare Python and all
-transitive dependencies (including `awscrt`) with checksummed resources, and
-verify `aws-cost-optimizer --help` without needing AWS credentials.
+```bash
+brew install mjfxjas/tap/aws-cost-optimizer
+aws-cost-optimizer --help
+```
+
+Homebrew manages Python and all dependencies, including AWS CRT. No virtual
+environment activation is needed. See [the Homebrew guide](docs/homebrew.md)
+for release updates and adding other programs to the shared tap.
 
 ## Quick Start
 
