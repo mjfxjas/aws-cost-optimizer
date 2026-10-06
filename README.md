@@ -93,6 +93,7 @@ This tool is based on optimizations that achieved:
 - Python 3.9+
 - AWS credentials configured
 - IAM permissions for read access to analyzed services
+- Lambda analysis requires `lambda:ListFunctions` and `lambda:GetFunctionConcurrency`; DynamoDB analysis requires `dynamodb:ListTables` and `dynamodb:DescribeTable`
 
 ## Development
 
@@ -101,6 +102,25 @@ git clone https://github.com/mjfxjas/aws-cost-optimizer
 cd aws-cost-optimizer
 pip install -e .
 ```
+
+## Analyzer validation
+
+Lambda and DynamoDB inventory checks follow all result pages. Lambda reserved
+concurrency is read with `GetFunctionConcurrency`; a configured value of zero
+is treated as an explicit limit. Failed per-function reads are logged and skipped.
+An incomplete scan is not evidence that an account has no opportunities.
+
+Run the regression suite without AWS credentials or live resources:
+
+```bash
+pip install -e . pytest
+python -m pytest tests -q
+```
+
+The tests use botocore Stubber to validate API operations and request parameters,
+including pagination, reserved concurrency, and access-denied handling. These
+checks do not measure cost savings. Savings percentages above are workload-dependent
+examples; validate traffic, capacity, retention, and performance before live apply.
 
 ## License
 
