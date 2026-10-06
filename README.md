@@ -3,15 +3,15 @@
 [![CI](https://github.com/mjfxjas/aws-cost-optimizer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mjfxjas/aws-cost-optimizer/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/aws-cost-optimizer.svg)](https://pypi.org/project/aws-cost-optimizer/)
 
-Automated AWS cost optimization recommendations based on production experience achieving 60% cost reduction.
+CLI for inspecting DynamoDB, Lambda, S3, and CloudFront configuration and applying selected changes.
 
 ## Features
 
-- **DynamoDB Analysis**: Identify tables that should use provisioned capacity
+- **DynamoDB Analysis**: List tables using on-demand capacity
 - **Lambda Analysis**: Find functions without reserved concurrency limits
 - **S3 Analysis**: Detect buckets missing lifecycle policies
-- **CloudFront Analysis**: Identify distributions with suboptimal cache settings
-- **Rich CLI**: Beautiful terminal output with actionable recommendations
+- **CloudFront Analysis**: Flag distributions with low default cache TTLs
+- **Terminal output**: Tables of findings and suggested actions
 
 ## Installation
 
@@ -28,7 +28,7 @@ aws-cost-optimizer analyze
 # Analyze specific service
 aws-cost-optimizer analyze --service dynamodb
 
-# Bulk apply workflow (safe-first)
+# Preview bulk changes
 aws-cost-optimizer apply --all --service all --dry-run
 
 # Live execute (requires explicit --execute)
@@ -38,26 +38,12 @@ aws-cost-optimizer apply --all --service all --execute
 aws-cost-optimizer apply --service dynamodb my-table --dry-run
 aws-cost-optimizer apply --service dynamodb my-table --execute
 
-# Interactive menu/hub (includes "Apply all (EXECUTE)")
+# Interactive menu
 aws-cost-optimizer menu
-```
-
-## Common Operator Flows
-A few high-signal commands to show what the tool is for:
-
-```bash
-# Full analysis pass across supported services
-aws-cost-optimizer analyze
-
-# Guided terminal experience
-aws-cost-optimizer menu
-
-# Safe bulk apply preview
-aws-cost-optimizer apply --all --service all --dry-run
 ```
 
 ## Smoke Test
-Quick verification that install and CLI wiring are healthy:
+Verify the installed package and CLI:
 
 ```bash
 python3 -m pip install --upgrade aws-cost-optimizer
@@ -66,27 +52,12 @@ python3 -c "from importlib.metadata import version; print(version('aws-cost-opti
 ```
 
 ## Security Checks
-- CI runs Bandit static security analysis on `src/aws_cost_optimizer` (Python 3.11 job).
-- Failing threshold is set to medium-or-higher severity/confidence.
+- CI runs Bandit static analysis on `src/aws_cost_optimizer` in the Python 3.12 job.
+- The CI scan reports issues at medium severity or higher.
 
 ```bash
 bandit -r src/aws_cost_optimizer --severity-level medium --confidence-level medium
 ```
-
-## Example Output
-
-```
-Service: DynamoDB | Resource: my-table | Issue: Using on-demand | Savings: ~40-60% | Action: Switch to provisioned
-Service: Lambda | Resource: my-function | Issue: No concurrency limit | Savings: Prevent overruns | Action: Set reserved concurrency
-Service: S3 | Resource: my-bucket | Issue: No lifecycle policy | Savings: ~20-30% | Action: Add lifecycle rules
-```
-
-## Real-World Results
-
-This tool is based on optimizations that achieved:
-- **60% cost reduction** on production serverless application
-- **90% reduction** in Lambda invocations via CloudFront caching
-- **Predictable costs** through provisioned capacity
 
 ## Requirements
 
@@ -113,5 +84,3 @@ See `CHANGELOG.md` for versioned release notes.
 ## Author
 
 Jonathan Schimpf - [jon@theatrico.org](mailto:jon@theatrico.org)
-
-AWS Solutions Architect Associate with production experience optimizing cloud costs.
