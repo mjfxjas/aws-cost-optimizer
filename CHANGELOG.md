@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.1.4 - 2026-10-06
+- Install Boto3 with CRT support automatically for AWS login credentials.
+- Require Boto3 1.41+ for the AWS login credential provider.
+- Report failed scans as incomplete instead of claiming no opportunities were found.
+- Stop bulk apply on incomplete scans and keep the interactive menu usable after errors.
+- Document pipx, virtual environment installation, and the Homebrew tap distribution path.
+
 ## 0.1.3 - 2026-02-28
 - Added safer bulk apply workflow: `apply --all --service <scope>` with confirmation and dry-run support.
 - Improved apply command UX with explicit `--service` for single-resource operations and clearer usage errors.

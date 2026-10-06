@@ -20,15 +20,28 @@ SERVICES = ["all", "dynamodb", "lambda", "s3", "cloudfront"]
 
 def _collect_recommendations(service: str) -> List[Dict]:
     recommendations: List[Dict] = []
-    if service in ["all", "dynamodb"]:
-        recommendations.extend(analyzers.analyze_dynamodb())
-    if service in ["all", "lambda"]:
-        recommendations.extend(analyzers.analyze_lambda())
-    if service in ["all", "s3"]:
-        recommendations.extend(analyzers.analyze_s3())
-    if service in ["all", "cloudfront"]:
-        recommendations.extend(analyzers.analyze_cloudfront())
+    failures = []
+    for name in SERVICES[1:]:
+        if service not in ("all", name):
+            continue
+        try:
+            recommendations.extend(getattr(analyzers, f"analyze_{name}")())
+        except analyzers.AnalysisError as err:
+            failures.append(str(err))
+    if failures:
+        raise click.ClickException(
+            "Analysis incomplete; no changes applied.\n" + "\n".join(failures)
+        )
     return recommendations
+
+
+def _collect_menu_recommendations(service: str) -> List[Dict] | None:
+    """Keep the menu open after a failed scan without showing success."""
+    try:
+        return _collect_recommendations(service)
+    except click.ClickException as err:
+        console.print(str(err), style="red", markup=False)
+        return None
 
 
 def _render_recommendations(recommendations: List[Dict]) -> None:
@@ -292,13 +305,19 @@ def menu():
             console.print("[cyan]Bye.[/cyan]")
             return
         if choice == 1:
-            _render_recommendations(_collect_recommendations("all"))
+            recs = _collect_menu_recommendations("all")
+            if recs is not None:
+                _render_recommendations(recs)
         elif choice == 2:
             service = Prompt.ask("Service", choices=SERVICES[1:], default="dynamodb")
-            _render_recommendations(_collect_recommendations(service))
+            recs = _collect_menu_recommendations(service)
+            if recs is not None:
+                _render_recommendations(recs)
         elif choice == 3:
             service = Prompt.ask("Scope", choices=SERVICES, default="all")
-            recs = _collect_recommendations(service)
+            recs = _collect_menu_recommendations(service)
+            if recs is None:
+                continue
             if not recs:
                 console.print("[green]Nothing to apply.[/green]")
                 continue
@@ -316,7 +335,9 @@ def menu():
             )
         elif choice == 5:
             service = Prompt.ask("Scope", choices=SERVICES, default="all")
-            recs = _collect_recommendations(service)
+            recs = _collect_menu_recommendations(service)
+            if recs is None:
+                continue
             if not recs:
                 console.print("[green]Nothing to apply.[/green]")
                 continue
