@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build twine bandit
+          pip install build twine bandit pytest
 
       - name: Install package
         run: pip install -e .
@@ -34,6 +34,9 @@ jobs:
         run: |
           aws-cost-optimizer --help
           python -c "import aws_cost_optimizer; print(aws_cost_optimizer.__version__)"
+
+      - name: Regression tests (no AWS credentials required)
+        run: python -m pytest tests -q
 
       - name: Bandit security scan
         if: matrix.python-version == '3.12'

@@ -13,7 +13,8 @@ def analyze_dynamodb() -> List[Dict]:
     recommendations = []
     try:
         dynamodb = boto3.client('dynamodb')
-        tables = dynamodb.list_tables()['TableNames']
+        tables = (name for page in dynamodb.get_paginator('list_tables').paginate()
+                  for name in page.get('TableNames', []))
         
         for table_name in tables:
             table = dynamodb.describe_table(TableName=table_name)['Table']
@@ -38,11 +39,18 @@ def analyze_lambda() -> List[Dict]:
     recommendations = []
     try:
         lambda_client = boto3.client('lambda')
-        functions = lambda_client.list_functions()['Functions']
+        functions = (func for page in lambda_client.get_paginator('list_functions').paginate()
+                     for func in page.get('Functions', []))
         
         for func in functions:
-            # Check for reserved concurrency
-            if 'ReservedConcurrentExecutions' not in func:
+            # ListFunctions does not include concurrency configuration.
+            try:
+                concurrency = lambda_client.get_function_concurrency(FunctionName=func['FunctionName'])
+            except ClientError as err:
+                logger.warning('Lambda concurrency check failed for %s: %s', func['FunctionName'], err)
+                continue
+            # Zero is an explicit limit (function disabled), not a missing value.
+            if 'ReservedConcurrentExecutions' not in concurrency:
                 recommendations.append({
                     'service': 'Lambda',
                     'resource': func['FunctionName'],
