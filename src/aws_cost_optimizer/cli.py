@@ -98,6 +98,16 @@ def _apply_lambda(resource: str, settings: Dict) -> tuple[bool, str]:
 
 def _apply_s3(resource: str, settings: Dict) -> tuple[bool, str]:
     client = boto3.client("s3")
+    # PUT replaces the entire lifecycle configuration, so a stale finding must
+    # never overwrite rules added since analysis (or an explicit resource apply).
+    try:
+        client.get_bucket_lifecycle_configuration(Bucket=resource)
+    except ClientError as err:
+        if err.response.get("Error", {}).get("Code") != "NoSuchLifecycleConfiguration":
+            raise
+    else:
+        return False, "Existing lifecycle configuration left unchanged; review its rules manually"
+
     expire_days = settings["s3_expire_days"]
     config = {
         "Rules": [
@@ -255,7 +265,9 @@ def apply(
         for rec in recs:
             if _apply_recommendation(rec, dry_run=dry_run, execute=execute, settings=settings):
                 ok_count += 1
-        console.print(f"[green]Apply-all run complete.[/green] Success: {ok_count}/{len(recs)}")
+        console.print(f"Apply-all run complete. Success: {ok_count}/{len(recs)}")
+        if execute and not dry_run and ok_count != len(recs):
+            raise click.ClickException("One or more resource updates failed; review the results above.")
         return
 
     if not resource:
@@ -268,7 +280,12 @@ def apply(
     if service == "all":
         raise click.UsageError("Single-resource apply requires a specific --service (not 'all').")
 
-    _apply_recommendation({"service": service, "resource": resource}, dry_run=dry_run, execute=execute, settings=settings)
+    ok = _apply_recommendation(
+        {"service": service, "resource": resource},
+        dry_run=dry_run, execute=execute, settings=settings,
+    )
+    if execute and not dry_run and not ok:
+        raise click.ClickException("Resource update failed; review the result above.")
 
 
 @main.command()

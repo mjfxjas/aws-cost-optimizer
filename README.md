@@ -124,3 +124,14 @@ See `CHANGELOG.md` for versioned release notes.
 ## Author
 
 Jonathan Schimpf - [jon@theatrico.org](mailto:jon@theatrico.org)
+
+### Apply results and existing S3 rules
+
+Live `apply --execute` commands exit nonzero if any requested update fails.
+Bulk mode attempts every recommendation and reports the success count. Plans
+and dry runs make no changes. S3 apply reads the current lifecycle configuration
+and refuses to replace existing rules, including rules added after analysis.
+Review existing rules manually; the S3 lifecycle PUT API replaces the entire
+configuration. This check cannot prevent a concurrent write between GET and PUT.
+
+Run offline regression tests with `python -m unittest discover -s tests`.
